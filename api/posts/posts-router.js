@@ -82,6 +82,28 @@ router.put('/:id', (req, res) => {
 })
 
 // [DELETE] - /api/posts/:id - remove post with ID and return deleted post object
+router.delete('/:id', (req, res) => {
+    const {id} = req.params;
+    let postToDelete = null;
+    Posts.findById(id)
+        .then(post => {
+            if (post) {
+                postToDelete = post
+                Posts.remove(id)
+                    .then(deleted => {
+                        res.status(200).json(postToDelete)
+                    })
+                    .catch(error => {
+                        res.status(500).json({message: "The post could not be removed"})
+                    })
+            } else {
+                res.status(404).json({message: "The post with the specified ID does not exist"})
+            }
+        })
+        .catch(error => {
+            res.status(500).json({message: "The post could not be removed"})
+        })
+})
 
 // [GET] - /api/posts/:id/comments - return array of all comment ojbects with post with given ID
 
