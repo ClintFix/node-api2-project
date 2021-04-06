@@ -52,10 +52,34 @@ router.post('/', (req, res) => {
                 res.status(500).json({message: 'There was an error while saving the post to the database'})
             })
     }
-
 })
 
 // [PUT] - /api/posts/:id - update post with specific id. return modified document
+router.put('/:id', (req, res) => {
+    const {id} = req.params;
+    if (!req.body.title || !req.body.contents) {
+        res.status(400).json({message: 'Please provide title and contents for the post'})
+    }
+    else { 
+        Posts.update(id, req.body)
+            .then(updated => {
+                if (updated) {
+                    Posts.findById(id)
+                        .then(post => {
+                            res.status(200).json(post)
+                        })
+                        .catch(error => {
+                            res.status(500).json({message: "The post information could not be modified"})
+                        })
+                } else {
+                    res.status(404).json({message: "The post with the specified ID does not exist"})
+                }
+            })
+            .catch(error => {
+                res.status(500).json({message: "The post information could not be modified"})
+            })
+    }
+})
 
 // [DELETE] - /api/posts/:id - remove post with ID and return deleted post object
 
