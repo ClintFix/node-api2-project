@@ -33,6 +33,27 @@ router.get('/:id', (req, res) => {
 })
 
 // [POST] - /api/posts - Create new post and return the newly craeted post object
+router.post('/', (req, res) => {
+    if (!req.body.title || !req.body.contents) {
+        res.status(400).json({message: 'Please provide title and contents for the post'})
+    }
+    else {
+        Posts.insert(req.body)
+            .then(newPost => {
+                    Posts.findById(newPost.id)
+                        .then(post => {
+                            res.status(201).json(post)
+                        })
+                        .catch(error => {
+                            res.status(500).json({message: "There was an error while saving the post to the database"})
+                        })
+            })
+            .catch(error => {
+                res.status(500).json({message: 'There was an error while saving the post to the database'})
+            })
+    }
+
+})
 
 // [PUT] - /api/posts/:id - update post with specific id. return modified document
 
